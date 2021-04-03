@@ -1,7 +1,11 @@
 package raim.zarin.tipcalculator
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import raim.zarin.tipcalculator.databinding.ActivityMainBinding
 import java.text.NumberFormat
 
@@ -14,10 +18,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         displayTip(0.0)
         binding.calculateButton.setOnClickListener { calculateTipAmount() }
+        binding.costOfServiceEditText.setOnKeyListener { view, keyCode, _ ->
+            handleKeyEvent(
+                view,
+                keyCode
+            )
+        }
     }
 
     private fun calculateTipAmount() {
-        val stringOfCost = binding.costOfService.text.toString()
+        val stringOfCost = binding.costOfServiceEditText.text.toString()
         val cost = stringOfCost.toDoubleOrNull()
         // If the cost is null or 0, then display 0 tip and exit this function early
         if (cost == null || cost == 0.0) {
@@ -51,4 +61,14 @@ class MainActivity : AppCompatActivity() {
         binding.tipResult.text = getString(R.string.tip_amount, formattedTip)
     }
 
+    private fun handleKeyEvent(view: View, keyCode: Int): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            // Hide the keyboard
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+            return true
+        }
+        return false
+    }
 }
